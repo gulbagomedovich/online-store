@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto addOrder(OrderDto orderDto) {
         Order order = modelMapper.map(orderDto, Order.class);
 
-        Boolean isPaid = restTemplate.postForObject("http://localhost:8083/payments",
+        Boolean isPaid = restTemplate.postForObject("http://payment-service/payments",
                 order.getCustomerUsername(), Boolean.class);
         if (isPaid != null && isPaid) {
             orderRepository.save(order);
