@@ -7,6 +7,7 @@ import com.gulbagomedovich.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,16 +21,19 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
     private final RestTemplate restTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public OrderDto addOrder(OrderDto orderDto) {
         Order order = modelMapper.map(orderDto, Order.class);
 
-//        Boolean isPaid = restTemplate.postForObject("", order.getCustomerUsername(), Boolean.class);
-//        if (isPaid != null && isPaid) {
-        orderRepository.save(order);
-        log.info("Order was created: {}", order);
-//        }
+        Boolean isPaid = restTemplate.postForObject("http://localhost:8083/payments",
+                order.getCustomerUsername(), Boolean.class);
+        if (isPaid != null && isPaid) {
+            orderRepository.save(order);
+            log.info("Order was created: {}", order);
+            rabbitTemplate.convertAndSend("orderExchange", "order.created", order);
+        }
 
         return modelMapper.map(order, OrderDto.class);
     }
