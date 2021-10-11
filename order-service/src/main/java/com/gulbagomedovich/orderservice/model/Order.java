@@ -31,6 +31,5 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Item> items;
     private BigDecimal totalAmount;
-    @Column(unique = true)
     private String customerUsername;
 }
