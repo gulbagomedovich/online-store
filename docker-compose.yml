@@ -1,0 +1,74 @@
+services:
+#  rabbitmq-server:
+#    image: rabbitmq:3-management
+#    ports:
+#      - 15672:15672
+  zipkin-server:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
+  service-registry:
+    image: gulbagomedovich/online-store-service-registry
+    ports:
+      - 8761:8761
+  config-server:
+    image: gulbagomedovich/online-store-config-server
+    environment:
+      - JAVA_OPTS=
+        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
+        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+    depends_on:
+      - zipkin-server
+      - service-registry
+    ports:
+      - 8888:8888
+  api-gateway:
+    image: gulbagomedovich/online-store-api-gateway
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+    depends_on:
+      - service-registry
+      - config-server
+    ports:
+      - 8080:8080
+#  product-service:
+#    image: gulbagomedovich/online-store-product-service
+#    environment:
+#      - JAVA_OPTS=
+#        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+#    depends_on:
+#      - service-registry
+#      - config-server
+#    ports:
+#      - 8081:8081
+  order-service:
+    image: gulbagomedovich/online-store-order-service
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+    depends_on:
+      - service-registry
+      - config-server
+    ports:
+      - 8082:8082
+#  payment-service:
+#    image: gulbagomedovich/online-store-payment-service
+#    environment:
+#      - JAVA_OPTS=
+#        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+#    depends_on:
+#      - service-registry
+#      - config-server
+#    ports:
+#      - 8083:8083
+#  delivery-service:
+#    image: gulbagomedovich/online-store-delivery-service
+#    environment:
+#      - JAVA_OPTS=
+#        -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
+#    depends_on:
+#      - service-registry
+#      - config-server
+#    ports:
+#      - 8084:8084
