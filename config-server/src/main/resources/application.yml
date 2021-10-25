@@ -12,6 +12,8 @@ spring:
         git:
           uri: https://github.com/gulbagomedovich/online-store
           clone-on-start: true
+  zipkin:
+    base-url: ${ZIPKIN_SERVER_URL:http://localhost:9411}
 
 eureka:
   client:

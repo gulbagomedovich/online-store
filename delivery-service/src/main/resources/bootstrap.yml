@@ -4,7 +4,7 @@ spring:
   cloud:
     config:
       enabled: true
-      uri: http://config-server
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888}
 
 eureka:
   client:
