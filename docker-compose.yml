@@ -17,10 +17,8 @@ services:
     image: gulbagomedovich/online-store-config-server
     environment:
       - JAVA_OPTS=
-        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
         -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
     depends_on:
-      - zipkin-server
       - service-registry
     ports:
       - "8888:8888"
@@ -39,9 +37,11 @@ services:
     image: gulbagomedovich/online-store-product-service
     environment:
       - JAVA_OPTS=
+        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
         -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
         -DCONFIG_SERVER_URL=http://config-server:8888
     depends_on:
+      - zipkin-server
       - service-registry
       - config-server
     ports:
@@ -50,22 +50,26 @@ services:
     image: gulbagomedovich/online-store-order-service
     environment:
       - JAVA_OPTS=
+        -DRABBITMQ_SERVER_HOST=rabbitmq-server
+        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
         -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
         -DCONFIG_SERVER_URL=http://config-server:8888
-        -DRABBITMQ_SERVER_HOST=rabbitmq-server
     depends_on:
+      - rabbitmq-server
+      - zipkin-server
       - service-registry
       - config-server
-      - rabbitmq-server
     ports:
       - "8082:8082"
   payment-service:
     image: gulbagomedovich/online-store-payment-service
     environment:
       - JAVA_OPTS=
+        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
         -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
         -DCONFIG_SERVER_URL=http://config-server:8888
     depends_on:
+      - zipkin-server
       - service-registry
       - config-server
     ports:
@@ -74,12 +78,14 @@ services:
     image: gulbagomedovich/online-store-delivery-service
     environment:
       - JAVA_OPTS=
+        -DRABBITMQ_SERVER_HOST=rabbitmq-server
+        -DZIPKIN_SERVER_URL=http://zipkin-server:9411
         -DEUREKA_SERVER_URL=http://service-registry:8761/eureka
         -DCONFIG_SERVER_URL=http://config-server:8888
-        -DRABBITMQ_SERVER_HOST=rabbitmq-server
     depends_on:
+      - rabbitmq-server
+      - zipkin-server
       - service-registry
       - config-server
-      - rabbitmq-server
     ports:
       - "8084:8084"
